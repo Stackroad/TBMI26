@@ -30,29 +30,12 @@ selectAtRandom = true; % true = select features at random, false = select the fi
 % Note: you have to modify the kNN() function yourselfs.
 
 % Set the number of neighbors
-k = 1;
+k = 15;
 % stem(Xt{2}(1,:),Xt{2}(2,:),'Linestyle','none')
-LkNN = kNN(Xt{2}, k, Xt{1}, Lt{1});
 
-% distXY = [];
-% labelsOut = [];
-% distanceNearest = [];
-% for x = 1 : length(Xt{2})
-%     distanceNearest = [];
-%     
-% for i = 1 : length(Xt{2}) 
-%     distXY = abs(Xt{2}(:,x) - Xt{1}(:,i)); %Beräknar y och x avståndet
-%     distanceNearest = [distanceNearest (sqrt(distXY(1)^2 + distXY(2)^2))]; %Beräknar avståndet till närmsta
-% end
-% 
-%     [M,Index] = min(distanceNearest);
-%     
-%     if (Index < (length(Xt{1})/2))
-%         labelsOut = [labelsOut 1];
-%     else
-%         labelsOut = [labelsOut 2];
-%     end
-% end
+
+bestK = kCrossVali(Xt{2}, k, Xt{1}, Lt{1}, Lt{2});
+LkNN = kNN(Xt{2}, bestK, Xt{1}, Lt{1});
 
 %% Calculate The Confusion Matrix and the Accuracy
 % Note: you have to modify the calcConfusionMatrix() function yourselfs.
