@@ -35,7 +35,7 @@ for n = 1:numIterations
     Ytraining = runMultiLayer(Xtraining, Wout, Vout);
 
     grad_v = 0; %Calculate the gradient for the output layer
-    grad_w = 0; %..and for the hidden layer.
+    grad_w = 2/numTraining * (Ytraining-Dtraining)*Xtraining'; %..and for the hidden layer.
 
 
 
