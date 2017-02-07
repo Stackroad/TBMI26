@@ -39,8 +39,8 @@ Xtest  = [ones(1,size(Xt{2},2));Xt{2}];
 %% Train your single layer network
 % Note: You nned to modify trainSingleLayer() in order to train the network
 
-numHidden = 45; % Change this, Number of hidde neurons 
-numIterations = 700; % Change this, Numner of iterations (Epochs)
+numHidden = 50; % Change this, Number of hidde neurons 
+numIterations = 5000; % Change this, Numner of iterations (Epochs)
 learningRate = 0.005; % Change this, Your learningrate
 V0 = rand(Xrows+1,numHidden);
 W0 = rand(numHidden+1,Drows); % Change this, Initiate your weight matrix W
