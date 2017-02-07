@@ -18,7 +18,9 @@ kVotes = [];
 for i = 1: 1: size(X,2)
     for j = 1: 1: size(Xt,2);
         distanceXY =  abs(X(:,i) - Xt(:,j));
-        distance  = [distance sqrt(distanceXY(1,1)^2 + distanceXY(2,1)^2)];
+        
+         distance  = [distance norm(distanceXY)]; %norm calculates the distance of the vector
+
     end
 
     for p = 1: 1: k

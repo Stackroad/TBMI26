@@ -33,14 +33,26 @@ testError(1) = sum(sum((Ytest - Dtest).^2))/(numTest*numClasses);
 
 for n = 1:numIterations
     Ytraining = runMultiLayer(Xtraining, Wout, Vout);
+    S = Vout'*Xtraining;
+    H = tanhprim(S);
+    H = [ones(1,length(H)) ; H];
 
-    grad_v = 0; %Calculate the gradient for the output layer
-    grad_w = 2/numTraining * (Ytraining-Dtraining)*Xtraining'; %..and for the hidden layer.
+%      size(Ytraining -Dtraining)
+%      size(W0')
+%     size(H)
+ 
+    grad_v = 2/numTraining * ((W0*(Ytraining-Dtraining)).*H)*Xtraining'; %Calculate the gradient for the output layer
+  grad_v = grad_v(2:end,:);% vafan gör man här? tar bort 1orna så att
+%  dimsensionerna stämmer till Vout.....
+    grad_w = 2/numTraining * (Ytraining-Dtraining)*H'; %..and for the hidden layer.
 
+% size(Wout-learningRate)
+% size(grad_w)
+% size(Vout - learningRate)
+% size(grad_v)
 
-
-    Wout = Wout - learningRate * grad_w; %Take the learning step.
-    Vout = Vout - learningRate * grad_v; %Take the learning step.
+    Wout = Wout - learningRate * grad_w'; %Take the learning step.
+    Vout = Vout - learningRate * grad_v'; %Take the learning step.
 
     Ytraining = runMultiLayer(Xtraining, Wout, Vout);
     Ytest = runMultiLayer(Xtest, Wout, Vout);

@@ -7,7 +7,7 @@
 % 3 = dot cloud 3
 % 4 = OCR data
 
-dataSetNr = 1; % Change this to load new data 
+dataSetNr = 4; % Change this to load new data 
 
 [X, D, L] = loadDataSet( dataSetNr );
 
@@ -34,7 +34,8 @@ k = 15;
 % stem(Xt{2}(1,:),Xt{2}(2,:),'Linestyle','none')
 
 
-bestK = kCrossVali(Xt{2}, k, Xt{1}, Lt{1}, Lt{2});
+bestK = kCrossVali(Xt{2}, k, Xt{1}, Lt{1}, Lt{2})
+% bestK=1;
 LkNN = kNN(Xt{2}, bestK, Xt{1}, Lt{1});
 
 %% Calculate The Confusion Matrix and the Accuracy

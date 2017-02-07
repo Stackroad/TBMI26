@@ -9,10 +9,16 @@ function [ Y, L ] = runMultiLayer( X, W, V )
 %               Y = Output for each feature, (matrix)
 %               L = The resulting label of each feature, (vector) 
 
-S = W'*X; %Calculate the sumation of the weights and the input signals (hidden neuron)
+S = V'*X; %Calculate the sumation of the weights and the input signals (hidden neuron)
 U = tanh(S); %Calculate the activation function as a hyperbolic tangent
-Y = V'*U; %Calculate the sumation of the output neuron
-   
+Wones = [ones(1,size(U,2))];
+H = [Wones;U];
+%  size(H)
+%   size(W)
+Y = W'*H; %Calculate the sumation of the output neuron
+% size(S)
+
+%  size(Y)
 
 % Calculate classified labels
 [~, L] = max(Y,[],1);
