@@ -15,7 +15,7 @@ Wones = [ones(1,size(U,2))];
 H = [Wones;U];
 %  size(H)
 %   size(W)
-Y = W'*H; %Calculate the sumation of the output neuron
+Y = tanh(W'*H); %Calculate the sumation of the output neuron
 % size(S)
 
 %  size(Y)

@@ -32,31 +32,34 @@ trainingError(1) = sum(sum((Ytraining - Dtraining).^2))/(numTraining*numClasses)
 testError(1) = sum(sum((Ytest - Dtest).^2))/(numTest*numClasses);
 
 for n = 1:numIterations
+    % Receive the output
     Ytraining = runMultiLayer(Xtraining, Wout, Vout);
-    S = Vout'*Xtraining;
-    H = tanhprim(S);
-    H2 = [ones(1,length(H)) ; H];
+% size(Vout')
+% size(Xtraining)
+% size(Vout'*Xtraining)
+% size(Wout(:,2:end)')
+size(Wout)
+size(Ytraining - Dtraining)
+size(Vout'*Xtraining)
+size((Wout*(Ytraining - Dtraining)))
 
-%      size(Ytraining -Dtraining)
-%      size(W0')
-%     size(H)
- 
-    grad_v = 2/numTraining * ((W0(2:end,:)*(Ytraining-Dtraining)).*H)*Xtraining'; %Calculate the gradient for the output layer
-%   grad_v = grad_v(2:end,:);% vafan gör man här? tar bort 1orna så att
-%  dimsensionerna stämmer till Vout.....
-    grad_w = 2/numTraining * (Ytraining-Dtraining)*H2'; %..and for the hidden layer.
 
-% size(Wout-learningRate)
-% size(grad_w)
-% size(Vout - learningRate)
-% size(grad_v)
+%Wout(:,2:end)' moddad i grad_v första parr
+    % Bias added to the output layer
+    H_bias = [ones(1,size(Vout'*Xtraining,2)) ; tanh(Vout'*Xtraining)];
+    % Calculating the gradients
+    grad_v = 2/numTraining * ((Wout(:,2:end)'*(Ytraining - Dtraining)).*tanhprim(Vout'*Xtraining)')*Xtraining'; %Calculate the gradient for the output layer
+    grad_w = 2/numTraining * (Ytraining - Dtraining)*H_bias'; %..and for the hidden layer.
 
-    Wout = Wout - learningRate * grad_w'; %Take the learning step.
-    Vout = Vout - learningRate * grad_v'; %Take the learning step.
 
+    Wout = Wout - learningRate * grad_w; %Take the learning step.
+    Vout = Vout - learningRate * grad_v; %Take the learning step.
+
+    % Receive the output with the new matrices (back-propagation)
     Ytraining = runMultiLayer(Xtraining, Wout, Vout);
     Ytest = runMultiLayer(Xtest, Wout, Vout);
 
+    %Error
     trainingError(1+n) = sum(sum((Ytraining - Dtraining).^2))/(numTraining*numClasses);
     testError(1+n) = sum(sum((Ytest - Dtest).^2))/(numTest*numClasses);
 end
