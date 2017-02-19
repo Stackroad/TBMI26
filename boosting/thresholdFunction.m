@@ -1,46 +1,52 @@
-function [ weakClassBest ] = thresholdFunction(xTrain, yTrain, weights, numImages, nbrHaarFeatures)
+function [ weakClassBest ] = thresholdFunction(xTraina, yTraina, weightsa, numImagesa, nbrHaarFeaturesa)
 %UNTITLED4 Summary of this function goes here
 %   Detailed explanation goes here
-
-error = 0;
-errorMatrix = zeros(nbrHaarFeatures,numImages);
-weakClassMatrix = zeros(nbrHaarFeatures,4);
-weakClassMatrix(:,4) = 1:nbrHaarFeatures;
+polar = 0;
+errorCalc = 0;
+errorMatrix = zeros(nbrHaarFeaturesa,numImagesa);
+polarMatrix = zeros(nbrHaarFeaturesa,numImagesa);
+weakClassMatrix = zeros(nbrHaarFeaturesa,4);
+% weakClassMatrix = zeros(nbrHaarFeatures,5);
+weakClassMatrix(:,4) = 1:nbrHaarFeaturesa;
 % yTrainClassiMatrix = zeros(nbrHaarFeatures,numImages);
+errorMatrix2 = zeros(nbrHaarFeaturesa,numImagesa);
 
-for rows = 1:nbrHaarFeatures
-    for cols = 1:numImages
-        tempThresh = xTrain(rows,cols);
-        for colsLoop= 1:numImages
-            if (tempThresh > xTrain(rows,colsLoop))
-                if (1 == yTrain(1,colsLoop))
-                    error = error + weights(colsLoop,1);
+for rows = 1:nbrHaarFeaturesa
+    for cols = 1:numImagesa
+        tempThresh = xTraina(rows,cols);
+        
+        for colsLoop= 1:numImagesa
+            if (tempThresh > xTraina(rows,colsLoop))
+                if (1 == yTraina(colsLoop))
+                    errorCalc = errorCalc + weightsa(colsLoop,1);
                 end
-            elseif (tempThresh <= xTrain(rows,colsLoop))
-                if (-1 == yTrain(1,colsLoop))
-                    error = error + weights(colsLoop,1);
-                end
-            else
-                
-            end
-            
+            elseif (tempThresh <= xTraina(rows,colsLoop))
+                if (-1 == yTraina(colsLoop))
+                    errorCalc = errorCalc + weightsa(colsLoop,1);
+                end   
+            end            
         end
-        if (error > 0.5)
+        
+         errorMatrix2(rows,cols) =  errorCalc;
+        if (errorCalc > 0.5)
             polar = -1;
-            error = 1-error;
+            errorCalc = 1-errorCalc;
         else
             polar = 1;
         end
 
-        errorMatrix(rows,cols) =  error;
-        error = 0;
+        errorMatrix(rows,cols) =  errorCalc;
+        polarMatrix(rows,cols) =  polar;
+        
+        errorCalc = 0;
     end
     [val, pos] = min(errorMatrix(rows,:));
-    weakClassMatrix(rows,1) = xTrain(rows,pos);
+    val2 = errorMatrix2(rows,pos);
+    weakClassMatrix(rows,1) = xTraina(rows,pos);
     weakClassMatrix(rows,2) = val;
-    weakClassMatrix(rows,3) = polar;
+    weakClassMatrix(rows,3) = polarMatrix(rows,pos);
+     weakClassMatrix(rows,5) = val2;
 end
-
 
 [minError, position]= min(weakClassMatrix(:,2));
 weakClassBest = weakClassMatrix(position,:);

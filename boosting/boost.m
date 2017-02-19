@@ -1,4 +1,6 @@
 % Load face and non-face data and plot a few examples
+clear all
+close all
 load faces, load nonfaces
 
 faces = double(faces); nonfaces = double(nonfaces);
@@ -26,64 +28,83 @@ end
 % from each class. Non-faces = class label y=-1, faces = class label y=1
 
 
-% xTrain A feature matrix of size [nbrHaarFeatures,nbrOfImages] in which
-%        column k contains the result obtained when applying each Haar feature
-%        filter to image k.
-nbrTrainExamples = 100;
-trainImages = cat(3,faces(:,:,1:nbrTrainExamples),nonfaces(:,:,1:nbrTrainExamples));
+nbrTestExamples = 2000;
+testImages = cat(3,faces(:,:,1:nbrTestExamples), ...
+    nonfaces(:,:,1:nbrTestExamples));
+xTest = ExtractHaarFeatures(testImages,haarFeatureMasks);
+yTest = [ones(1,nbrTestExamples), -ones(1,nbrTestExamples)];
+
+nbrTrainExamples = 200;
+trainImages = cat(3,faces(:,:,1:nbrTrainExamples),...
+    nonfaces(:,:,1:nbrTrainExamples));
 xTrain = ExtractHaarFeatures(trainImages,haarFeatureMasks);
 yTrain = [ones(1,nbrTrainExamples), -ones(1,nbrTrainExamples)];
 
-nbrTrainExamples = 1000;
-testImages = cat(3,faces(:,:,1:nbrTrainExamples),nonfaces(:,:,1:nbrTrainExamples));
-xTest = ExtractHaarFeatures(testImages,haarFeatureMasks);
-yTest = [ones(1,nbrTrainExamples), -ones(1,nbrTrainExamples)];
-
-
-
 numImages = size(xTrain,2);
+%%
 %initialization
 weights=[];
 for a=1:size(xTrain,2)
     weights = [weights; 1/numImages];
 end
 
-
-numberOfWeakClass = 30;
+numberOfWeakClass = 100;
 weakClassiAll = [];
 yTrainClassiAll = [];
-
+accVector = [];
+accVectorTest = [];
 for T =1 :numberOfWeakClass
-    
-[weakClassBest ] = thresholdFunction(xTrain, yTrain, weights, numImages, nbrHaarFeatures);
-%labels with best threshhh
-weakClassBest(1,3)
-yTrainClassi = yTrainClassRow(xTrain((weakClassBest(1,4)),:),weakClassBest(1,1),weakClassBest(1,3));
-yTrainClassiAll =[yTrainClassiAll; yTrainClassi];
 
+[weakClassBest ] = thresholdFunction(xTrain, yTrain, weights, ...
+    numImages, nbrHaarFeatures);
+%labels with best threshhh... Haar, thresh, pol
+yTrainClassi = yTrainClassRow(xTrain((weakClassBest(1,4)),:) ...
+    ,weakClassBest(1,1),weakClassBest(1,3));
 
 alpha = alphaCalc(weakClassBest(1,2));
-
-%update weights
-weights = weightsUpdateFunc(weights, alpha, yTrainClassi, yTrain,weakClassBest(1,3) );
-% weights
-weakClassiInsert = [weakClassBest(1,1), weakClassBest(1,3),weakClassBest(1,4), alpha ];
-
+weights = weightsUpdateFunc(weights, alpha, yTrainClassi, ...
+    yTrain,weakClassBest(1,3) );
+%weights
+%Thres,,pol,haar, alpha,error
+weakClassiInsert = [weakClassBest(1,1), weakClassBest(1,3), ...
+    weakClassBest(1,4), alpha, weakClassBest(1,2),weakClassBest(1,5) ];
 
 %Weak classifiers matrix
 weakClassiAll = [weakClassiAll; weakClassiInsert];
-% weakClassiInsert = [];
-% yTrainClassi = [];
+[strongClass, wrongClassImn] = strongClassi( weakClassiAll, ...
+    xTrain, yTrain, nbrTrainExamples );
+accVector = [accVector strongClass];
 
 end
 
+%%
+ weakClassiStrong = weakClassiAll(1:50,:)
+[strongClass2, wrongClassImn2] = strongClassi( weakClassiStrong, ...
+    xTest, yTest, nbrTestExamples*2 );
+
+accVectorTest = strongClass2;
+
 %% Final string classi
+figure(55)
+plot(accVector)
+title('Strong classifier')
+xlabel('# weak classifiers')
+ylabel('Accuracy')
 
-acc = strongClassi( weakClassiAll, xTest, yTest, nbrTrainExamples );
 
+%%
+figure(4)
+colormap gray
+for wf=1:4
+    subplot(2,2,wf), imagesc(faces(:,:,wrongClassImn2(122+wf,1))), ...
+        axis image, axis off
+end
 
-
-
-
-
+%% 
+figure(5)
+colormap gray
+for wf=1:4 %modify depending on length of wrongclass...
+    subplot(2,2,wf), imagesc(nonfaces(:,:,wrongClassImn2(370-wf,1)...
+        -2000)), axis image, axis off
+end
 
