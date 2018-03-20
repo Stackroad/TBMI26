@@ -1,7 +1,1 @@
-
-TEst
-"# TBMI26PerMte"  
-
-
-
-3232323232
+TBMI26 - Neural Networks and Learning Systems - Laborations
